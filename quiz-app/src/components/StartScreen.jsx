@@ -15,7 +15,7 @@ export default function StartScreen({ total, onStart }) {
             <div className="text-xl font-extrabold text-slate-800">
               クイズに挑戦しよう！
             </div>
-            <div className="mt-2 text-sm font-bold text-slate-600">全 {total} 問</div>
+            <div className="mt-2 text-sm font-bold text-slate-600">１０問</div>
             <div className="mt-4 text-xs font-bold text-slate-500">
               選択 →「答えを確認する」→ 次へ
             </div>
