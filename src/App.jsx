@@ -16,32 +16,35 @@ export default function App() {
   const [reviewScore, setReviewScore] = useState(0);
   const [reviewWrongs, setReviewWrongs] = useState([]);
 
-const QUESTION_COUNT = Math.min(10, QUESTIONS.length);
+  // 出題数を10問に固定
+  const QUESTION_COUNT = Math.min(10, QUESTIONS.length);
 
-const questions = useMemo(() => {
-  return shuffleArray(QUESTIONS)
-    .slice(0, QUESTION_COUNT)
-    .map((q) => {
-      const choices = shuffleArray(q.choices);
-      const answerText = q.choices[q.answerIndex];
+  // 本番出題用の問題セット
+  const questions = useMemo(() => {
+    return shuffleArray(QUESTIONS)
+      .slice(0, QUESTION_COUNT)
+      .map((q) => {
+        const choices = shuffleArray(q.choices);
+        const answerText = q.choices[q.answerIndex];
 
-      return {
-        ...q,
-        choices,
-        answerIndex: choices.indexOf(answerText),
-      };
-    });
-}, [seed]);
+        return {
+          ...q,
+          choices,
+          answerIndex: choices.indexOf(answerText),
+        };
+      });
+  }, [seed, QUESTION_COUNT]);
 
   const start = () => setPhase("quiz");
 
+  // 本番終了
   const finish = ({ score, wrongs }) => {
     setFinalScore(score);
     setWrongList(wrongs);
     setPhase("result");
   };
 
-  // wrongsに choices/answerIndex が入っている前提（Quiz.jsxが保存）
+  // 間違えた問題だけ復習
   const startReview = () => {
     const qs = wrongList.map((w, i) => ({
       id: w.id ?? `review-${i}`,
@@ -57,12 +60,14 @@ const questions = useMemo(() => {
     setPhase("review");
   };
 
+  // 復習終了
   const finishReview = ({ score, wrongs }) => {
     setReviewScore(score);
     setReviewWrongs(wrongs);
     setPhase("reviewResult");
   };
 
+  // 最初からやり直し
   const restart = () => {
     setFinalScore(0);
     setWrongList([]);
@@ -73,6 +78,7 @@ const questions = useMemo(() => {
     setPhase("start");
   };
 
+  // 復習でも間違えた問題だけもう一回
   const restartReviewWithWrongs = () => {
     const qs = reviewWrongs.map((w, i) => ({
       id: w.id ?? `review2-${i}`,
@@ -90,20 +96,31 @@ const questions = useMemo(() => {
 
   return (
     <div className="min-h-screen w-full bg-linear-to-br from-sky-200 via-cyan-200 to-blue-300 text-slate-800">
-       <div className="min-h-screen w-full grid place-items-center px-6 py-10">
-        {/* 画面サイズに応じて大きく（必要なら 1400px にしてOK） */}
+      <div className="min-h-screen w-full grid place-items-center px-6 py-10">
         <div className="w-full max-w-300">
+          <div className="mb-6 flex items-center justify-between">
+            <div className="rounded-full bg-white/80 px-4 py-1 text-sm font-bold text-sky-700 shadow">
+              Quiz App
+            </div>
+            <div className="hidden text-sm font-semibold text-slate-600 sm:block">
+              React + Tailwind
+            </div>
+          </div>
 
-          {phase === "start" && <StartScreen total={QUESTIONS.length} onStart={start} />}
+          {phase === "start" && (
+            <StartScreen total={QUESTION_COUNT} onStart={start} />
+          )}
 
-          {phase === "quiz" && <Quiz questions={questions} onFinish={finish} />}
+          {phase === "quiz" && (
+            <Quiz questions={questions} onFinish={finish} />
+          )}
 
           {phase === "result" && (
             <ResultScreen
               title="RESULT"
               badge="結果"
               score={finalScore}
-              total={QUESTIONS.length}
+              total={QUESTION_COUNT}
               wrongs={wrongList}
               onRestart={restart}
               onReview={wrongList.length ? startReview : null}
@@ -111,7 +128,9 @@ const questions = useMemo(() => {
             />
           )}
 
-          {phase === "review" && <Quiz questions={reviewQuestions} onFinish={finishReview} />}
+          {phase === "review" && (
+            <Quiz questions={reviewQuestions} onFinish={finishReview} />
+          )}
 
           {phase === "reviewResult" && (
             <ResultScreen
@@ -125,6 +144,10 @@ const questions = useMemo(() => {
               reviewLabel="復習でも間違えた問題だけもう一回＞"
             />
           )}
+
+          <p className="mt-8 text-center text-sm text-slate-600">
+            © {new Date().getFullYear()} Quiz App
+          </p>
         </div>
       </div>
     </div>
