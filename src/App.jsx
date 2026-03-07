@@ -98,15 +98,6 @@ export default function App() {
     <div className="min-h-screen w-full bg-linear-to-br from-sky-200 via-cyan-200 to-blue-300 text-slate-800">
       <div className="min-h-screen w-full grid place-items-center px-6 py-10">
         <div className="w-full max-w-300">
-          <div className="mb-6 flex items-center justify-between">
-            <div className="rounded-full bg-white/80 px-4 py-1 text-sm font-bold text-sky-700 shadow">
-              Quiz App
-            </div>
-            <div className="hidden text-sm font-semibold text-slate-600 sm:block">
-              React + Tailwind
-            </div>
-          </div>
-
           {phase === "start" && (
             <StartScreen total={QUESTION_COUNT} onStart={start} />
           )}
@@ -143,11 +134,7 @@ export default function App() {
               onReview={reviewWrongs.length ? restartReviewWithWrongs : null}
               reviewLabel="復習でも間違えた問題だけもう一回＞"
             />
-          )}
-
-          <p className="mt-8 text-center text-sm text-slate-600">
-            © {new Date().getFullYear()} Quiz App
-          </p>
+          )}          
         </div>
       </div>
     </div>
